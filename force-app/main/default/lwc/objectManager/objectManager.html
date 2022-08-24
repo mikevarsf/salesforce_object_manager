@@ -1,0 +1,29 @@
+<!-- Object Manager -->
+<template>
+    <div class="slds-grid_vertical slds-color__background_gray-1 slds-p-around_medium">
+        <div class="slds-col slds-m-bottom_small">
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-input
+                            name="enter-search"
+                            label="Search by Label, Plural Label or API Name"
+                            type="search"
+                            onchange={handleSearchInputChange}
+                    ></lightning-input>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col">
+            <lightning-datatable
+                    key-field="id"
+                    data={data}
+                    hide-checkbox-column="true"
+                    columns={columns}>
+            </lightning-datatable>
+        </div>
+    </div>
+
+    <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="loading" size="small"></lightning-spinner>
+    </template>
+</template>
