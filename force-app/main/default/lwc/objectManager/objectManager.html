@@ -13,12 +13,14 @@
                 </div>
             </div>
         </div>
-        <div class="slds-col">
+        <div class="slds-col slds-p-bottom_large">
             <lightning-datatable
                     key-field="id"
                     data={data}
                     hide-checkbox-column="true"
-                    columns={columns}>
+                    columns={columns}
+                    onrowaction={handleRowActions}
+                    >                    
             </lightning-datatable>
         </div>
     </div>

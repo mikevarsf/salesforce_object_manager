@@ -1,20 +1,27 @@
 import { LightningElement, wire, track } from 'lwc';
 import findObject from '@salesforce/apex/ObjectManagerCntrl.findObject';
-import { refreshApex } from '@salesforce/apex';
+
+const actions = [
+    { label: 'Object Setup', name: 'objectSetup' },
+ ];
 
 const columns = [
+    {
+        type: 'action',
+        typeAttributes: {
+            rowActions: actions,
+            menuAlignment: 'left'
+        }
+    },
     { label: 'Label', fieldName: 'label' },
     { label: 'Plural Label', fieldName: 'pluralLabel' },
     { label: 'API Name', fieldName: 'apiName'},
     { label: 'Type', fieldName: 'type'}
 ]; 
 
-// search delay
-const DELAY = 350;
-
 export default class ObjectManager extends LightningElement {
 
-    @track data = [];
+    @track data = null;
     columns = columns;
     queryTerm = '';
 
@@ -22,30 +29,36 @@ export default class ObjectManager extends LightningElement {
         keyword: "$queryTerm"
     }) wiredSObjects(result) {
         this.data = null;
+        this.error = null;
         console.log("result", result);
         if (result.data) {
-            this.data = [...result.data].sort((a,b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+            this.data = JSON.parse(JSON.stringify(result.data));
+            this.data = [...this.data].sort((a,b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+            this.data.forEach(v => {
+                v.setup = '/lightning/setup/ObjectManager/' + v.apiName + '/Details/view';
+            });
         }
         if (result.error) {
+            this.error = result.error;
             console.error("Error", error);
         }
     }
 
     get showSpinner() {
         return !this.data && !this.error;
-      }
-      
+    }  
 
     handleSearchInputChange(evt){
         this.queryTerm = evt.target.value;
-        window.clearTimeout(this.delayTimeout);
-        this.delayTimeout = setTimeout(this.doSearch.bind(this), DELAY);
-
     }
 
-    doSearch() {
-        this.data = null;
-        refreshApex(this.data);
+    handleRowActions(event) {
+        const actionName = event.detail.action.name;
+        const row = event.detail.row;
+        switch (actionName) {
+            case 'objectSetup':
+                window.open(row.setup, "_blank");
+                break;
+       }
     }
-
 }
