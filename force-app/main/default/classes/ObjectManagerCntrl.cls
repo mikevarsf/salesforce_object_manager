@@ -2,11 +2,6 @@ public with sharing class ObjectManagerCntrl {
 
     private static final List<ObjectInfo> OBJECT_INFOS = getObjects();
 
-    @AuraEnabled
-    public static List<ObjectInfo> getObjectsList(){
-        return OBJECT_INFOS;
-    }
-
     private static List<ObjectInfo> getObjects(){
         List<ObjectInfo> result = new List<ObjectInfo>();
 
@@ -31,20 +26,24 @@ public with sharing class ObjectManagerCntrl {
         return result;
     }
 
-    @AuraEnabled
+    @AuraEnabled(cacheable=true)
     public static List<ObjectInfo> findObject(String keyword){
         List<ObjectInfo> result = new List<ObjectInfo>();
 
-        for (ObjectInfo oi : OBJECT_INFOS){
-            if ((oi.label != null && oi.label.containsIgnoreCase(keyword)) ||
-                    (oi.pluralLabel != null && oi.pluralLabel.containsIgnoreCase(keyword)) ||
-                    (oi.apiName != null && oi.apiName.containsIgnoreCase(keyword))){
-                result.add(oi);
+        if (String.isEmpty(keyword)) {
+            return OBJECT_INFOS;
+        } else {
+            for (ObjectInfo oi : OBJECT_INFOS){
+                if ((oi.label != null && oi.label.containsIgnoreCase(keyword)) ||
+                        (oi.pluralLabel != null && oi.pluralLabel.containsIgnoreCase(keyword)) ||
+                        (oi.apiName != null && oi.apiName.containsIgnoreCase(keyword))){
+                    result.add(oi);
+                }
             }
-        }
 
-        return result;
-    }
+            return result;
+        }
+}
 
     public class ObjectInfo {
 
