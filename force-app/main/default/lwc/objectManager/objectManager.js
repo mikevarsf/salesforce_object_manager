@@ -9,12 +9,9 @@ const columns = [
     { label: 'Type', fieldName: 'type'}
 ]; 
 
-// search delay
-const DELAY = 350;
-
 export default class ObjectManager extends LightningElement {
 
-    @track data = [];
+    @track data = null;
     columns = columns;
     queryTerm = '';
 
@@ -22,30 +19,23 @@ export default class ObjectManager extends LightningElement {
         keyword: "$queryTerm"
     }) wiredSObjects(result) {
         this.data = null;
+        this.error = null;
         console.log("result", result);
         if (result.data) {
             this.data = [...result.data].sort((a,b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
         }
         if (result.error) {
+            this.error = error;
             console.error("Error", error);
         }
     }
 
     get showSpinner() {
         return !this.data && !this.error;
-      }
-      
+    }  
 
     handleSearchInputChange(evt){
         this.queryTerm = evt.target.value;
-        window.clearTimeout(this.delayTimeout);
-        this.delayTimeout = setTimeout(this.doSearch.bind(this), DELAY);
-
-    }
-
-    doSearch() {
-        this.data = null;
-        refreshApex(this.data);
     }
 
 }
