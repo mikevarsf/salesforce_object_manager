@@ -3,6 +3,7 @@ import findObject from '@salesforce/apex/ObjectManagerCntrl.findObject';
 
 const actions = [
     { label: 'Object Setup', name: 'objectSetup' },
+    { label: 'Field Dependencies', name: 'fieldDependencies' },
  ];
 
 const columns = [
@@ -36,6 +37,7 @@ export default class ObjectManager extends LightningElement {
             this.data = [...this.data].sort((a,b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
             this.data.forEach(v => {
                 v.setup = '/lightning/setup/ObjectManager/' + v.apiName + '/Details/view';
+                v.fieldDependenciesUrl = '/lightning/setup/ObjectManager/' + v.apiName + '/FieldsAndRelationships/viewDependencyList';                
             });
         }
         if (result.error) {
@@ -59,6 +61,9 @@ export default class ObjectManager extends LightningElement {
             case 'objectSetup':
                 window.open(row.setup, "_blank");
                 break;
-       }
+            case 'fieldDependencies':
+                window.open(row.fieldDependenciesUrl, "_blank");
+                break;
+        }
     }
 }
